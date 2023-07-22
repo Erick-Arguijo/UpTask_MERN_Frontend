@@ -1,118 +1,113 @@
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
+import Alerta from "@/components/alerta";
+import LayoutAuth from "@/components/layoutAuth";
+import useForm from "@/hooks/useForm";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import React, { useState } from "react";
+import useAuth from "@/hooks/useAuth";
 
-const inter = Inter({ subsets: ['latin'] })
 
-export default function Home() {
+
+const Login = () => {
+  const router = useRouter()
+  const {usuario, login, alerta} = useAuth()
+
+  const [shown, setshown] = useState(false)
+  const { values, handleInputChange, reset } = useForm({email: "",password: ""});
+
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+      await login({correo:values.email, contraseña:values.password})  
+  
+  };
+
+
   return (
-    <main
-      className={`flex min-h-screen flex-col items-center justify-between p-24 ${inter.className}`}
-    >
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">pages/index.js</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
+    <>
+      <LayoutAuth page={"Login"} title={"Inicia Sesión Y Administra Tus "}>
+        {
+          Object.entries(alerta).length !== 0 && <Alerta alerta={alerta} /> 
+        }
+        <form onSubmit={handleSubmit}>
+          <div className="mt-5">
+            <label
+              htmlFor="email"
+              className="text-md font-bold text-gray-600 text-xl"
+            >
+              Email
+            </label>
+            <input
+              type="text"
+              id="email"
+              name="email"
+              placeholder="Email"
+              value={values.email}
+              onChange={handleInputChange}
+              className="border rounded-lg mt-1 shadow-inner py-2 px-2 font-semibold w-full bg-gray-50 outline-none"
             />
-          </a>
+          </div>
+
+          <div className="mt-5 relative">
+            <label
+              htmlFor="password"
+              className="text-md font-bold text-gray-600 text-xl"
+            >
+              Password
+            </label>
+            <input
+              type={`${shown ? 'text':'password'}`}
+              id="password"
+              name="password"
+              placeholder="password"
+              value={values.password}
+              onChange={handleInputChange}
+              className="border rounded-lg mt-1 shadow-inner mb-5 py-2 px-2 font-semibold w-full bg-gray-50 outline-none"
+            />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-5 h-5 cursor-pointer absolute top-11 right-5 text-gray-600 font-bold hover:text-gray-800"
+              onMouseDown={() => setshown(!shown)}
+              onMouseUp={() =>setshown(!shown)}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+            </svg>
+          </div>
+
+          <div>
+            <input
+              type="submit"
+              value="Iniciar Sesión"
+              className="bg-sky-800 w-full py-2 text-white font-bold text-lg rounded-md hover:bg-sky-900 
+                          cursor-pointer mb-5 ring ring-sky-800 hover:ring-offset-2 duration-300"
+            />
+          </div>
+        </form>
+        <div className="flex flex-col">
+          <Link href="/account" className="text-sky-600 font-bold">
+            ¿No tienes una cuenta?{" "}
+            <span className=" font-bold text-gray-600">Registrate</span>
+          </Link>
+          <Link href="/olvidePassword" className="font-bold mt-2 text-gray-600">
+            Olvide Password
+          </Link>
         </div>
-      </div>
+      </LayoutAuth>
+    </>
+  );
+};
 
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700/10 after:dark:from-sky-900 after:dark:via-[#0141ff]/40 before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Discover and deploy boilerplate example Next.js&nbsp;projects.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
-}
+export default Login;
